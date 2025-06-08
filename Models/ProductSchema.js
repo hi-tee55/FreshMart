@@ -25,3 +25,4 @@ const Product = new mongoose.model("Product", ProductSchema);
 
 module.exports = Product;
 // This code defines a Mongoose schema for a product in an e-commerce application.
+// .this

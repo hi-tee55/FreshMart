@@ -1,16 +1,23 @@
 const mongoose = require('mongoose');
+const {OrderItem} = require('./orderItem'); // Assuming orderItem.js exports OrderItem model
 
 const OrderSchema = new mongoose.Schema({
-    orderItems: {
-        product: {},
-        quantity: { type: Number, required: true }
-    },
+    orderItems: [{
+        type: mongoose.Schema.Types.ObjectId,
+        ref: 'OrderItem',
+        required: true
+    }],
     user: {type: mongoose.Schema.Types.ObjectId, ref: 'UserId', required: true},
     totalPrice: { type: Number, require: true },
-    status: { type: String, enum: ['pending', 'completed', 'cancelled'], default: 'pending' }
+    zip: {type: String, required: true},
+    country: {type: String, required: true},
+    city: {type: String, required: true},
+    address: { type: String, required: true },
+    status: { type: String, default: 'pending' }
 }, { timestamps: true });
 
-const OrderModel = new mongoose.model("Order", OrderSchema);
+const Order = new mongoose.model('Order', OrderSchema);
 
-module.exports = OrderModel;
+module.exports = Order;
 // This code defines a Mongoose schema for an order in an e-commerce application.
+///

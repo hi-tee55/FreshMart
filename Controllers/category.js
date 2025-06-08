@@ -17,16 +17,16 @@ const getAllCategories = async (req, res) => {
 
 const findOneCategory = async (req, res) => {
     try {
-        if (!mongoose.Types.ObjectId.isValid(req.params.id)) {
-            return res.status(400).json({ message: "Invalid category ID format" });
-        }
+        // if (!mongoose.Types.ObjectId.isValid(req.params.id)) {
+        //     return res.status(400).json({ message: "Invalid category ID format" });
+        // }
 
-        const category = await Category.findById(req.params.id);
+        const categoryId  = req.params.id;
+        // Replace the following line with your actual logic to find a category by ID
+        const category = await Category.findById(categoryId);
 
         if (!category) {
-            return res.status(400).json({
-                message: "Category not found."
-            })
+            return res.status(404).json({ message: "Category not found" });
         }
 
         res.status(200).json({
@@ -40,7 +40,9 @@ const findOneCategory = async (req, res) => {
             error: error.message
         });
     }
-}
+};
+
+// ...other code...
 
 // Make sure the function uses req.params.id to get the category ID
 // const findOneCategory = async (req, res) => {
@@ -71,6 +73,11 @@ const addCategory = async (req, res) => {
 
         if (!category) {
             return res.status(404).send("the category must be created!")
+        }
+        const existingCategory = await Category.findOne({ name });
+
+        if (existingCategory) {
+            return res.status(400).json({ message: "Category already exists" });
         }
 
         await category.save();
@@ -107,24 +114,24 @@ const updateCategory = async (req, res) => {
 }
 
 const deleteCategory = async (req, res) => {
-    Category.findByIdAndRemove(req.params.id)
-    .then(() => {
-        if (!Category) {
+    try {
+        const category = await Category.findByIdAndRemove(req.params.id);
+        if (!category) {
             return res.status(404).json({
                 success: false,
                 message: "Category not found"
-            })
-        }Category
+            });
+        }
         return res.status(200).json({
             success: true,
             message: "Category successfully deleted"
-        }).catch(err => {
-            res.status(400).json({
-                success: false,
-                err
-            })
-        })
-    })
+        });
+    } catch (err) {
+        res.status(400).json({
+            success: false,
+            error: err.message
+        });
+    }
 }
 
 module.exports = {
